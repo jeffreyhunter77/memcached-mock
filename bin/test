@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+/*
+ * Copyright (c) 2015 Jeffrey Hunter
+ *
+ * Distributed under the MIT license. See the LICENSE file distributed
+ * with this work for details and restrictions.
+ */
+require("nodeunit").reporters.default
+  .run([require("path").join(__dirname, '..', 'tests', 'unit')]);

@@ -1,0 +1,30 @@
+{
+  "name": "memcached-mock",
+  "version": "0.0.1",
+  "description": "A mock implementation of memcached to use as a replacement in tests",
+  "keywords": [
+    "cache",
+    "client",
+    "memcache",
+    "memcached",
+    "mock",
+    "tdd",
+    "test",
+    "unit"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "bin/test"
+  },
+  "homepage": "https://github.com/jeffreyhunter77/memcached-mock",
+  "bugs": {"url": "https://github.com/jeffreyhunter77/memcached-mock/issues"},
+  "author": "Jeffrey Hunter <jeff@missioncriticallabs.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com:jeffreyhunter77/memcached-mock.git"
+  },
+  "devDependencies": {
+    "nodeunit": "0.9.0"
+  }
+}
