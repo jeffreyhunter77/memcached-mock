@@ -88,11 +88,13 @@ extend(Memcached.prototype, {
    * Touch a given key
    */
   touch: function(key, ttl, callback) {
-    cache[key] = extend({}, cache[key], {expires: expires(this, ttl)});
+    if (cache[key]) cache[key].expires = expires(this, ttl);
+    
     invoke(callback, {self: this,
                       type: 'touch',
                       args: arguments,
-                      names: ['key', 'lifetime', 'callback']});
+                      names: ['key', 'lifetime', 'callback']},
+      undefined, (cache[key] ? true : false));
   },
 
   /**
@@ -119,7 +121,8 @@ extend(Memcached.prototype, {
     invoke(callback, {self: this,
                       type: 'set',
                       args: arguments,
-                      names: ['key', 'value', 'lifetime', 'callback']});
+                      names: ['key', 'value', 'lifetime', 'callback']},
+      undefined, true);
   },
   
   /**

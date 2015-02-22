@@ -42,9 +42,10 @@ module.exports.testGetSet = function(test) {
     test.ifError(err);
     test.strictEqual(data, undefined);
     
-    memcached.set(key, value, 1, function setCallback(err) {
+    memcached.set(key, value, 1, function setCallback(err, reply) {
       test.ifError(err);
       testContext(test, this, 'set', {"key": key, "value": value, "lifetime": 1, callback: setCallback});
+      test.strictEqual(reply, true);
       
       memcached.get(key, function getCallback(err, data) {
         test.ifError(err);
@@ -94,8 +95,9 @@ module.exports.testTouch = function(test) {
   memcached.set(key, value, 1, function(err, data) {
     test.ifError(err);
     
-    memcached.touch(key, 2, function(err) {
+    memcached.touch(key, 2, function(err, reply) {
       test.ifError(err);
+      test.strictEqual(reply, true);
       
       setTimeout(function() {
         memcached.get(key, function(err, data) {
@@ -110,6 +112,20 @@ module.exports.testTouch = function(test) {
   });
 }
 
+/** Test touch non-existent key */
+module.exports.testTouchNonExistent = function(test) {
+  var key = '19epr4uj1';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.touch(key, 1, function(err, reply) {
+    test.ifError(err);
+    test.strictEqual(reply, false);
+    test.done();
+    
+  });
+}
+
 /** Test gets */
 module.exports.testGets = function(test) {
   var key = '19epmksqm';
@@ -119,7 +135,7 @@ module.exports.testGets = function(test) {
   
   memcached.set(key, value, 1, function(err, data) {
     test.ifError(err);
-    test.strictEqual(data, undefined);
+    test.strictEqual(data, true);
     
     memcached.gets(key, function getsCallback(err, data) {
       test.ifError(err);
