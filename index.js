@@ -31,6 +31,17 @@ function expires(memcached, ttl) {
 }
 
 /**
+ * Handle expiration of an entry with a given key. Returns the entry if
+ * it has not expired.
+ */
+function expire(memcached, key) {
+  if (cache[key] && cache[key].expires <= Date.now())
+    delete cache[key];
+  
+  return cache[key];
+}
+
+/**
  * Return the normalized value for a cache entry
  */
 function value(entry) {
@@ -88,6 +99,8 @@ extend(Memcached.prototype, {
    * Touch a given key
    */
   touch: function(key, ttl, callback) {
+    expire(this, key);
+    
     if (cache[key]) cache[key].expires = expires(this, ttl);
     
     invoke(callback, {self: this,
@@ -103,14 +116,11 @@ extend(Memcached.prototype, {
   get: function(key, callback) {
     if (Array.isArray(key)) return this.getMulti(key, callback);
 
-    if (cache[key] && cache[key].expires <= Date.now())
-      delete cache[key];
-    
     invoke(callback, {self: this,
                       type: 'get',
                       args: arguments,
                       names: ['key', 'callback']},
-      undefined, value(cache[key]));
+      undefined, value(expire(this, key)));
   },
 
   /**
@@ -129,14 +139,11 @@ extend(Memcached.prototype, {
    * Get the value of a given key and its CAS id
    */
   gets: function(key, callback) {
-    if (cache[key] && cache[key].expires <= Date.now())
-      delete cache[key];
-    
     invoke(callback, {self: this,
                       type: 'gets',
                       args: arguments,
                       names: ['key', 'callback']},
-      undefined, casvalue(key, cache[key]));
+      undefined, casvalue(key, expire(this, key)));
   },
   
   /**
@@ -146,7 +153,7 @@ extend(Memcached.prototype, {
     var results = {};
     
     keys.forEach(function(key) {
-      if (cache[key] && cache[key].expires > Date.now())
+      if (expire(this, key))
         results[key] = value(cache[key]);
     });
     
