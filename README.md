@@ -1,3 +1,5 @@
+# memcached-mock
+
 A mock implementation of [memcached](https://www.npmjs.com/package/memcached) to use as a replacement in tests.
 
 This is currently a work in progresss. This version of the mock supports the following methods:
@@ -34,4 +36,4 @@ memcached.get("hello", function(err, data) {
 });
 ```
 
-Although the interface is the same, no network calls are made. Values are stored in memory and discarded when the process exists.
+Although the interface is the same, no network calls are made. Values are stored in memory and discarded when the process exits.
