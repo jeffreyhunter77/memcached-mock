@@ -61,6 +61,22 @@ function casvalue(key, entry) {
 }
 
 /**
+ * Sets the value of a key
+ */
+function setkey(memcached, key, value, ttl) {
+  cache[key] = {value: value, expires: expires(memcached, ttl), cas: (++cas)};
+}
+
+/**
+ * Returns a not stored error
+ */
+function notStored() {
+  var e = new Error("Item is not stored");
+  e.notStored = true;
+  return e;
+}
+
+/**
  * Invoke a callback with the correct context
  */
 function invoke(callback, info) {
@@ -127,7 +143,8 @@ extend(Memcached.prototype, {
    * Set the value of a given key
    */
   set: function(key, value, ttl, callback) {
-    cache[key] = {value: value, expires: expires(this, ttl), cas: (++cas)};
+    setkey(this, key, value, ttl);
+    
     invoke(callback, {self: this,
                       type: 'set',
                       args: arguments,
@@ -162,6 +179,23 @@ extend(Memcached.prototype, {
                       args: arguments,
                       names: ['keys', 'callback']},
       undefined, results);
+  },
+  
+  /**
+   * Replace a key, but only if it already exists
+   */
+  replace: function(key, value, ttl, callback) {
+    expire(this, key);
+
+    if (cache[key])
+      setkey(this, key, value, ttl);
+
+    invoke(callback, {self: this,
+                      type: 'replace',
+                      args: arguments,
+                      names: ['key', 'value', 'lifetime', 'callback']},
+      (cache[key] ? undefined : notStored()),
+      (cache[key] ? true : false));
   }
 
 });

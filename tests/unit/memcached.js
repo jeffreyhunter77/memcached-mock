@@ -219,3 +219,52 @@ module.exports.testGetWithArray = function(test) {
   
   setNext();
 }
+
+/** Test successful replace */
+module.exports.testReplaceSuccess = function(test) {
+  var key = '19ept1qon';
+  var value1 = '19ept7un3';
+  var value2 = '19ept96oc';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value1, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.replace(key, value2, 1, function replaceCallback(err, reply) {
+      test.ifError(err);
+      testContext(test, this, 'replace', {"key": key, "value": value2, "lifetime": 1, callback: replaceCallback});
+      test.strictEqual(reply, true);
+      
+      memcached.get(key, function(err, data) {
+        test.ifError(err);
+        test.strictEqual(data, value2);
+        test.done();
+        
+      });
+    });
+  });
+}
+
+/** Test unsuccessful replace */
+module.exports.testReplaceFailure = function(test) {
+  var key = '19eptdnq3';
+  var value = '19epteo37';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.replace(key, value, 1, function replaceCallback(err, reply) {
+    test.ok(err);
+    test.strictEqual(err.notStored, true);
+    test.strictEqual(err.message, "Item is not stored");
+    testContext(test, this, 'replace', {"key": key, "value": value, "lifetime": 1, callback: replaceCallback});
+    test.strictEqual(reply, false);
+    
+    memcached.get(key, function(err, data) {
+      test.ifError(err);
+      test.strictEqual(data, undefined);
+      test.done();
+      
+    });
+  });
+}
