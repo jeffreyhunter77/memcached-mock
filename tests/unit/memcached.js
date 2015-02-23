@@ -268,3 +268,28 @@ module.exports.testReplaceFailure = function(test) {
     });
   });
 }
+
+/** Test flush */
+module.exports.testFlush = function(test) {
+  var key = '19epuc5dp';
+  var value = '';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.flush(function flushCallback(err, reply) {
+      test.ifError(err);
+      // global context is used by memcached for this call
+      test.deepEqual(reply, [true]);
+      
+      memcached.get(key, function getCallback(err, data) {
+        test.ifError(err);
+        test.strictEqual(data, undefined);
+        test.done();
+        
+      });
+    });
+  });
+}

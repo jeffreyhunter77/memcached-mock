@@ -2,6 +2,7 @@ A mock implementation of [memcached](https://www.npmjs.com/package/memcached) to
 
 This is currently a work in progresss. This version of the mock supports the following methods:
 
+ * flush(callback)
  * get(key, callback)
  * gets(key, callback)
  * getMulti(keys, callback)

@@ -196,6 +196,19 @@ extend(Memcached.prototype, {
                       names: ['key', 'value', 'lifetime', 'callback']},
       (cache[key] ? undefined : notStored()),
       (cache[key] ? true : false));
+  },
+  
+  /**
+   * Flush the contents of the cache
+   */
+  flush: function(callback) {
+    cache = {};
+
+    invoke(callback, {self: this,
+                      type: 'flush',
+                      args: arguments,
+                      names: ['callback']},
+      undefined, [true]);
   }
 
 });
