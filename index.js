@@ -216,6 +216,25 @@ extend(Memcached.prototype, {
   },
   
   /**
+   * Update a key, but only if its CAS id matches the provided value
+   */
+  cas: function(key, value, cas, ttl, callback) {
+    var entry = expire(this, key);
+    var success = false;
+    
+    if (entry && entry.cas === cas) {
+      setkey(this, key, value, ttl);
+      success = true;
+    }
+    
+    invoke(callback, {self: this,
+                      type: 'cas',
+                      args: arguments,
+                      names: ['key', 'value', 'cas', 'lifetime', 'callback']},
+      undefined, success);
+  },
+  
+  /**
    * Flush the contents of the cache
    */
   flush: function(callback) {

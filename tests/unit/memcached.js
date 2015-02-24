@@ -342,3 +342,63 @@ module.exports.testAddFailure = function(test) {
     });
   });
 }
+
+/** Test successful cas call */
+module.exports.testCasSuccess = function(test) {
+  var key = '19espjh7k';
+  var value1 = '19espjpl5';
+  var value2 = '19espjtqq';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value1, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.gets(key, function(err, data) {
+      test.ifError(err);
+      
+      memcached.cas(key, value2, data.cas, 1, function casCallback(err, reply) {
+        test.ifError(err);
+        testContext(test, this, 'cas', {"key": key, "value": value2, "cas": data.cas, "lifetime": 1, callback: casCallback});
+        test.strictEqual(reply, true);
+      
+        memcached.get(key, function(err, data) {
+          test.ifError(err);
+          test.strictEqual(data, value2);
+          test.done();
+        
+        });
+      });
+    });
+  });
+}
+
+/** Test failed cas call */
+module.exports.testCasFailure = function(test) {
+  var key = '19espmmg4';
+  var value1 = '19espq82q';
+  var value2 = '19espqia5';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value1, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.gets(key, function(err, data) {
+      test.ifError(err);
+      
+      memcached.cas(key, value2, "invalid", 1, function casCallback(err, reply) {
+        test.ifError(err);
+        testContext(test, this, 'cas', {"key": key, "value": value2, "cas": "invalid", "lifetime": 1, callback: casCallback});
+        test.strictEqual(reply, false);
+      
+        memcached.get(key, function(err, data) {
+          test.ifError(err);
+          test.strictEqual(data, value1);
+          test.done();
+        
+        });
+      });
+    });
+  });
+}
