@@ -4,6 +4,7 @@ A mock implementation of [memcached](https://www.npmjs.com/package/memcached) to
 
 This is currently a work in progresss. This version of the mock supports the following methods:
 
+ * add(key, value, ttl, callback)
  * flush(callback)
  * get(key, callback)
  * gets(key, callback)

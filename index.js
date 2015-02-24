@@ -199,6 +199,23 @@ extend(Memcached.prototype, {
   },
   
   /**
+   * Add a key, but only if it does not already exist
+   */
+  add: function(key, value, ttl, callback) {
+    var exists = expire(this, key);
+    
+    if (!exists)
+      setkey(this, key, value, ttl);
+
+    invoke(callback, {self: this,
+                      type: 'add',
+                      args: arguments,
+                      names: ['key', 'value', 'lifetime', 'callback']},
+      (!exists ? undefined : notStored()),
+      (!exists ? true : false));
+  },
+  
+  /**
    * Flush the contents of the cache
    */
   flush: function(callback) {
