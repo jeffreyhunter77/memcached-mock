@@ -54,7 +54,7 @@ function value(entry) {
 function casvalue(key, entry) {
   if (!entry) return;
   
-  var result = {cas: entry.cas};
+  var result = {cas: String(entry.cas)};
   result[key] = entry.value;
 
   return result;
@@ -222,7 +222,7 @@ extend(Memcached.prototype, {
     var entry = expire(this, key);
     var success = false;
     
-    if (entry && entry.cas === cas) {
+    if (entry && String(entry.cas) === cas) {
       setkey(this, key, value, ttl);
       success = true;
     }

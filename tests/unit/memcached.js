@@ -141,7 +141,8 @@ module.exports.testGets = function(test) {
       test.ifError(err);
       testContext(test, this, 'gets', {"key": key, callback: getsCallback});
       test.ok(data.hasOwnProperty('cas'));
-      test.ok(data.cas > 1);
+      test.ok(typeof data.cas, "string");
+      test.ok(data.cas.length > 0);
       
       var expected = {cas: data.cas};
       expected[key] = value;
