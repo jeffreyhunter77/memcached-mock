@@ -452,3 +452,52 @@ module.exports.testAppendFailure = function(test) {
     });
   });
 }
+
+/** Test successful prepend */
+module.exports.testPrependSuccess = function(test) {
+  var key = '19evau93p';
+  var value1 = '19evaujvt';
+  var value2 = '19evaunli';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value1, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.prepend(key, value2, function prependCallback(err, reply) {
+      test.ifError(err);
+      testContext(test, this, 'prepend', {"key": key, "value": value2, callback: prependCallback});
+      test.strictEqual(reply, true);
+      
+      memcached.get(key, function(err, data) {
+        test.ifError(err);
+        test.strictEqual(data, value2 + value1);
+        test.done();
+        
+      });
+    });
+  });
+}
+
+/** Test unsuccessful prepend */
+module.exports.testPrependFailure = function(test) {
+  var key = '19evausm8';
+  var value = '19evavruq';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.prepend(key, value, function prependCallback(err, reply) {
+    test.ok(err);
+    test.strictEqual(err.notStored, true);
+    test.strictEqual(err.message, "Item is not stored");
+    testContext(test, this, 'prepend', {"key": key, "value": value, callback: prependCallback});
+    test.strictEqual(reply, false);
+    
+    memcached.get(key, function(err, data) {
+      test.ifError(err);
+      test.strictEqual(data, undefined);
+      test.done();
+      
+    });
+  });
+}

@@ -261,6 +261,23 @@ extend(Memcached.prototype, {
   },
   
   /**
+   * Prepend a string value to a key, but only if the key already exists
+   */
+  prepend: function(key, prependValue, callback) {
+    expire(this, key);
+
+    if (cache[key])
+      setkey(this, key, String(prependValue) + value(cache[key]), keyttl(this, key));
+
+    invoke(callback, {self: this,
+                      type: 'prepend',
+                      args: arguments,
+                      names: ['key', 'value', 'callback']},
+      (cache[key] ? undefined : notStored()),
+      (cache[key] ? true : false));
+  },
+  
+  /**
    * Flush the contents of the cache
    */
   flush: function(callback) {
