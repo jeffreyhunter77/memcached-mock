@@ -311,6 +311,21 @@ extend(Memcached.prototype, {
       (cache[key] ? value(cache[key]) : false));
   },
   
+  /**
+   * Delete a key from the cache
+   */
+  del: function(key, callback) {
+    var exists = expire(this, key);
+    
+    if (exists)
+      delete cache[key];
+
+    invoke(callback, {self: this,
+                      type: 'delete',
+                      args: arguments,
+                      names: ['key', 'callback']},
+      undefined, (exists ? true : false));
+  },
 
   /**
    * Flush the contents of the cache

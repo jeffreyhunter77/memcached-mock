@@ -595,3 +595,43 @@ module.exports.testDecrFailure = function(test) {
     });
   });
 }
+
+/** Test delete */
+module.exports.testDelete = function(test) {
+  var key = '19evevlni';
+  var value = '19evf0356';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.del(key, function delCallback(err, reply) {
+      test.ifError(err);
+      testContext(test, this, 'delete', {"key": key, callback: delCallback});
+      test.strictEqual(reply, true);
+      
+      memcached.get(key, function(err, data) {
+        test.ifError(err);
+        test.strictEqual(data, undefined);
+        test.done();
+        
+      });
+    });
+  });
+}
+
+/** Test delete nonexistent key */
+module.exports.testDeleteNonExisting = function(test) {
+  var key = '19evf3p03';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.del(key, function delCallback(err, reply) {
+    test.ifError(err);
+    testContext(test, this, 'delete', {"key": key, callback: delCallback});
+    test.strictEqual(reply, false);
+    test.done();
+      
+  });
+}
