@@ -548,3 +548,50 @@ module.exports.testIncrFailure = function(test) {
     });
   });
 }
+
+/** Test successful decrement */
+module.exports.testDecrSuccess = function(test) {
+  var key = '19evc21pi';
+  var value1 = 833;
+  var value2 = 333;
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value1, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.decr(key, value2, function decrCallback(err, reply) {
+      test.ifError(err);
+      testContext(test, this, 'decr', {"key": key, "value": value2, callback: decrCallback});
+      test.strictEqual(reply, value1 - value2);
+      
+      memcached.get(key, function(err, data) {
+        test.ifError(err);
+        test.strictEqual(data, value1 - value2);
+        test.done();
+        
+      });
+    });
+  });
+}
+
+/** Test unsuccessful decrement */
+module.exports.testDecrFailure = function(test) {
+  var key = '19evc4uqo';
+  var value = 128;
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.decr(key, value, function decrCallback(err, reply) {
+    test.ifError(err);
+    testContext(test, this, 'decr', {"key": key, "value": value, callback: decrCallback});
+    test.strictEqual(reply, false);
+    
+    memcached.get(key, function(err, data) {
+      test.ifError(err);
+      test.strictEqual(data, undefined);
+      test.done();
+      
+    });
+  });
+}
