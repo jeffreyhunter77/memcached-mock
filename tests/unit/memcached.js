@@ -501,3 +501,50 @@ module.exports.testPrependFailure = function(test) {
     });
   });
 }
+
+/** Test successful increment */
+module.exports.testIncrSuccess = function(test) {
+  var key = '19evbdh8t';
+  var value1 = 258;
+  var value2 = 12;
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.set(key, value1, 1, function(err) {
+    test.ifError(err);
+    
+    memcached.incr(key, value2, function incrCallback(err, reply) {
+      test.ifError(err);
+      testContext(test, this, 'incr', {"key": key, "value": value2, callback: incrCallback});
+      test.strictEqual(reply, value1 + value2);
+      
+      memcached.get(key, function(err, data) {
+        test.ifError(err);
+        test.strictEqual(data, value1 + value2);
+        test.done();
+        
+      });
+    });
+  });
+}
+
+/** Test unsuccessful increment */
+module.exports.testIncrFailure = function(test) {
+  var key = '19evbj7rf';
+  var value = 438;
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.incr(key, value, function incrCallback(err, reply) {
+    test.ifError(err);
+    testContext(test, this, 'incr', {"key": key, "value": value, callback: incrCallback});
+    test.strictEqual(reply, false);
+    
+    memcached.get(key, function(err, data) {
+      test.ifError(err);
+      test.strictEqual(data, undefined);
+      test.done();
+      
+    });
+  });
+}

@@ -278,6 +278,23 @@ extend(Memcached.prototype, {
   },
   
   /**
+   * Increment a value by an amount, but only if the key already exists
+   */
+  incr: function(key, amount, callback) {
+    expire(this, key);
+
+    if (cache[key])
+      setkey(this, key, Number(value(cache[key])) + amount, keyttl(this, key));
+
+    invoke(callback, {self: this,
+                      type: 'incr',
+                      args: arguments,
+                      names: ['key', 'value', 'callback']},
+      undefined,
+      (cache[key] ? value(cache[key]) : false));
+  },
+  
+  /**
    * Flush the contents of the cache
    */
   flush: function(callback) {
