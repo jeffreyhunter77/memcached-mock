@@ -42,6 +42,15 @@ function expire(memcached, key) {
 }
 
 /**
+ * Return the equivalent ttl for a key
+ */
+function keyttl(memcached, key) {
+  return cache[key] && cache[key].expires ?
+    ((cache[key].expires - Date.now()) / 1000) :
+    0;
+}
+
+/**
  * Return the normalized value for a cache entry
  */
 function value(entry) {
@@ -232,6 +241,23 @@ extend(Memcached.prototype, {
                       args: arguments,
                       names: ['key', 'value', 'cas', 'lifetime', 'callback']},
       undefined, success);
+  },
+  
+  /**
+   * Append a string value to a key, but only if the key already exists
+   */
+  append: function(key, appendValue, callback) {
+    expire(this, key);
+
+    if (cache[key])
+      setkey(this, key, String(value(cache[key])) + appendValue, keyttl(this, key));
+
+    invoke(callback, {self: this,
+                      type: 'append',
+                      args: arguments,
+                      names: ['key', 'value', 'callback']},
+      (cache[key] ? undefined : notStored()),
+      (cache[key] ? true : false));
   },
   
   /**
