@@ -635,3 +635,47 @@ module.exports.testDeleteNonExisting = function(test) {
       
   });
 }
+
+/** Test version */
+module.exports.testVersion = function(test) {
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.version(function versionCallback(err, reply) {
+    test.ifError(err);
+    // global context is used by memcached for this call
+    test.deepEqual(reply, [{
+      "server": "127.0.0.1:11211",
+      "version": "1.4.20",
+      "major": "1",
+      "minor": "4",
+      "bugfix": "20"
+    }]);
+    test.done();
+      
+  });
+}
+
+/** Test version with multiple servers */
+module.exports.testVersionMultiple = function(test) {
+  var memcached = new Memcached(["192.168.0.1:11211","192.168.0.2:11211"]);
+  
+  memcached.version(function versionCallback(err, reply) {
+    test.ifError(err);
+    // global context is used by memcached for this call
+    test.deepEqual(reply, [{
+      "server": "192.168.0.1:11211",
+      "version": "1.4.20",
+      "major": "1",
+      "minor": "4",
+      "bugfix": "20"
+    },{
+      "server": "192.168.0.2:11211",
+      "version": "1.4.20",
+      "major": "1",
+      "minor": "4",
+      "bugfix": "20"
+    }]);
+    test.done();
+      
+  });
+}

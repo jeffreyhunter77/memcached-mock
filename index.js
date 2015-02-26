@@ -114,6 +114,11 @@ function invoke(callback, info) {
  */
 function Memcached(locations, options) {
   events.EventEmitter.call(this);
+  
+  if (locations)
+    this.servers = [].concat(locations);
+  else
+    this.servers = [];
 }
 
 util.inherits(Memcached, events.EventEmitter);
@@ -327,6 +332,20 @@ extend(Memcached.prototype, {
       undefined, (exists ? true : false));
   },
 
+  /**
+   * Return an array of server version information
+   */
+  version: function(callback) {
+    invoke(callback, {self: this,
+                      type: 'version',
+                      args: arguments,
+                      names: ['callback']},
+      undefined,
+      this.servers.map(function(s) {
+        return {server: s, version: "1.4.20", major: "1", minor: "4", bugfix: "20"};
+      }));
+  },
+  
   /**
    * Flush the contents of the cache
    */
