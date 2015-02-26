@@ -679,3 +679,38 @@ module.exports.testVersionMultiple = function(test) {
       
   });
 }
+
+/** Test stats */
+module.exports.testStats = function(test) {
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.stats(function statsCallback(err, reply) {
+    test.ifError(err);
+    // global context is used by memcached for this call
+    test.deepEqual(reply, [{
+      "server": "127.0.0.1:11211",
+      "pid":1,"uptime":1,"time":reply[0].time,"version":"1.4.20","libevent":"2.0.22-stable","pointer_size":64,"rusage_user":"0.0","rusage_system":"0.0","curr_connections":1,"total_connections":1,"connection_structures":1,"reserved_fds":0,"cmd_get":0,"cmd_set":0,"cmd_flush":0,"cmd_touch":0,"get_hits":0,"get_misses":0,"delete_misses":0,"delete_hits":0,"incr_misses":0,"incr_hits":0,"decr_misses":0,"decr_hits":0,"cas_misses":0,"cas_hits":0,"cas_badval":0,"touch_hits":0,"touch_misses":0,"auth_cmds":0,"auth_errors":0,"bytes_read":1,"bytes_written":1,"limit_maxbytes":67108864,"accepting_conns":1,"listen_disabled_num":0,"threads":4,"conn_yields":0,"hash_power_level":16,"hash_bytes":524288,"hash_is_expanding":0,"malloc_fails":0,"bytes":0,"curr_items":0,"total_items":0,"expired_unfetched":0,"evicted_unfetched":0,"evictions":0,"reclaimed":0,"crawler_reclaimed":0
+    }]);
+    test.done();
+      
+  });
+}
+
+/** Test stats with multiple servers */
+module.exports.testStatsMultiple = function(test) {
+  var memcached = new Memcached(["192.168.0.1:11211","192.168.0.2:11211"]);
+  
+  memcached.stats(function statsCallback(err, reply) {
+    test.ifError(err);
+    // global context is used by memcached for this call
+    test.deepEqual(reply, [{
+      "server": "192.168.0.1:11211",
+      "pid":1,"uptime":1,"time":reply[0].time,"version":"1.4.20","libevent":"2.0.22-stable","pointer_size":64,"rusage_user":"0.0","rusage_system":"0.0","curr_connections":1,"total_connections":1,"connection_structures":1,"reserved_fds":0,"cmd_get":0,"cmd_set":0,"cmd_flush":0,"cmd_touch":0,"get_hits":0,"get_misses":0,"delete_misses":0,"delete_hits":0,"incr_misses":0,"incr_hits":0,"decr_misses":0,"decr_hits":0,"cas_misses":0,"cas_hits":0,"cas_badval":0,"touch_hits":0,"touch_misses":0,"auth_cmds":0,"auth_errors":0,"bytes_read":1,"bytes_written":1,"limit_maxbytes":67108864,"accepting_conns":1,"listen_disabled_num":0,"threads":4,"conn_yields":0,"hash_power_level":16,"hash_bytes":524288,"hash_is_expanding":0,"malloc_fails":0,"bytes":0,"curr_items":0,"total_items":0,"expired_unfetched":0,"evicted_unfetched":0,"evictions":0,"reclaimed":0,"crawler_reclaimed":0
+    },{
+      "server": "192.168.0.2:11211",
+      "pid":1,"uptime":1,"time":reply[1].time,"version":"1.4.20","libevent":"2.0.22-stable","pointer_size":64,"rusage_user":"0.0","rusage_system":"0.0","curr_connections":1,"total_connections":1,"connection_structures":1,"reserved_fds":0,"cmd_get":0,"cmd_set":0,"cmd_flush":0,"cmd_touch":0,"get_hits":0,"get_misses":0,"delete_misses":0,"delete_hits":0,"incr_misses":0,"incr_hits":0,"decr_misses":0,"decr_hits":0,"cas_misses":0,"cas_hits":0,"cas_badval":0,"touch_hits":0,"touch_misses":0,"auth_cmds":0,"auth_errors":0,"bytes_read":1,"bytes_written":1,"limit_maxbytes":67108864,"accepting_conns":1,"listen_disabled_num":0,"threads":4,"conn_yields":0,"hash_power_level":16,"hash_bytes":524288,"hash_is_expanding":0,"malloc_fails":0,"bytes":0,"curr_items":0,"total_items":0,"expired_unfetched":0,"evicted_unfetched":0,"evictions":0,"reclaimed":0,"crawler_reclaimed":0
+    }]);
+    test.done();
+      
+  });
+}
