@@ -18,6 +18,7 @@ This is currently a work in progresss. This version of the mock supports the fol
  * replace(key, value, ttl, callback)
  * set(key, value, ttl, callback)
  * stats(callback)
+ * settings(callback)
  * version(callback)
 
 Example usage:

@@ -375,6 +375,24 @@ extend(Memcached.prototype, {
       this.servers.map(function(s) {
         return extend({server: s}, info);
       }));
+  },
+
+  /**
+   * Provide callback an array of server settings
+   */
+  settings: function(callback) {
+    var info = {
+      "maxbytes":67108864,"maxconns":1024,"tcpport":11211,"udpport":11211,"inter":"NULL","verbosity":0,"oldest":13516,"evictions":"on","domain_socket":"NULL","umask":700,"growth_factor":"1.25","chunk_size":48,"num_threads":4,"num_threads_per_udp":4,"stat_key_prefix":":","detail_enabled":"no","reqs_per_event":20,"cas_enabled":"yes","tcp_backlog":1024,"binding_protocol":"auto-negotiate","auth_enabled_sasl":"no","item_size_max":1048576,"maxconns_fast":"no","hashpower_init":0,"slab_reassign":"no","slab_automove":0,"lru_crawler":"no","lru_crawler_sleep":100,"lru_crawler_tocrawl":0,"tail_repair_time":0,"flush_enabled":"yes","hash_algorithm":"jenkins"
+    };
+
+    invoke(callback, {self: this,
+                      type: 'settings',
+                      args: arguments,
+                      names: ['callback']},
+      undefined,
+      this.servers.map(function(s) {
+        return extend({server: s}, info);
+      }));
   }
 
 });
