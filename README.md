@@ -14,6 +14,7 @@ This is currently a work in progresss. This version of the mock supports the fol
  * gets(key, callback)
  * getMulti(keys, callback)
  * incr(key, amount, callback)
+ * items(callback)
  * prepend(key, value, callback)
  * replace(key, value, ttl, callback)
  * set(key, value, ttl, callback)

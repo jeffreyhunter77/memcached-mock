@@ -784,3 +784,77 @@ module.exports.testSlabsMultiple = function(test) {
       
   });
 }
+
+/** Test items with no entries */
+module.exports.testItemsEmpty = function(test) {
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.flush(function(err) {
+    test.ifError(err);
+    
+    memcached.items(function statsCallback(err, reply) {
+      test.ifError(err);
+      // global context is used by memcached for this call
+      test.deepEqual(reply, [{}]);
+      test.done();
+      
+    });
+  });
+}
+
+/** Test items with one entry */
+module.exports.testItemsOne = function(test) {
+  var key = '19f3asnit';
+  var value = '19f3asukk';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.flush(function(err) {
+    test.ifError(err);
+    
+    memcached.set(key, value, 1, function(err) {
+      test.ifError(err);
+      
+      memcached.items(function statsCallback(err, reply) {
+        test.ifError(err);
+        // global context is used by memcached for this call
+        test.deepEqual(reply, [{
+          "server": "127.0.0.1:11211",
+          "1":{"number":1,"age":1,"evicted":0,"evicted_nonzero":0,"evicted_time":0,"outofmemory":0,"tailrepairs":0,"reclaimed":0,"expired_unfetched":0,"evicted_unfetched":0,"crawler_reclaimed":0}
+        }]);
+        test.done();
+      
+      });
+    });
+  });
+}
+
+/** Test items with multiple servers */
+module.exports.testItemsMultiple = function(test) {
+  var key = '19f3at90a';
+  var value = '19f3atbg0';
+  
+  var memcached = new Memcached(["192.168.0.1:11211","192.168.0.2:11211"]);
+  
+  memcached.flush(function(err) {
+    test.ifError(err);
+    
+    memcached.set(key, value, 1, function(err) {
+      test.ifError(err);
+      
+      memcached.items(function statsCallback(err, reply) {
+        test.ifError(err);
+        // global context is used by memcached for this call
+        test.deepEqual(reply, [{
+          "server": "192.168.0.1:11211",
+          "1":{"number":1,"age":1,"evicted":0,"evicted_nonzero":0,"evicted_time":0,"outofmemory":0,"tailrepairs":0,"reclaimed":0,"expired_unfetched":0,"evicted_unfetched":0,"crawler_reclaimed":0}
+        },{
+          "server": "192.168.0.2:11211",
+          "1":{"number":1,"age":1,"evicted":0,"evicted_nonzero":0,"evicted_time":0,"outofmemory":0,"tailrepairs":0,"reclaimed":0,"expired_unfetched":0,"evicted_unfetched":0,"crawler_reclaimed":0}
+        }]);
+        test.done();
+      
+      });
+    });
+  });
+}

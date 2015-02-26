@@ -411,6 +411,26 @@ extend(Memcached.prototype, {
       this.servers.map(function(s) {
         return extend({server: s}, info);
       }));
+  },
+
+  /**
+   * Provide callback an array of server items information
+   */
+  items: function(callback) {
+    var len = Object.keys(cache).length;
+    
+    var info = len === 0 ? {} :
+      {"1":{"number":len,"age":1,"evicted":0,"evicted_nonzero":0,"evicted_time":0,"outofmemory":0,"tailrepairs":0,"reclaimed":0,"expired_unfetched":0,"evicted_unfetched":0,"crawler_reclaimed":0}}
+    ;
+
+    invoke(callback, {self: this,
+                      type: 'info',
+                      args: arguments,
+                      names: ['callback']},
+      undefined,
+      this.servers.map(function(s) {
+        return extend(len > 0 ? {server: s} : {}, info);
+      }));
   }
 
 });
