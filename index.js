@@ -393,6 +393,24 @@ extend(Memcached.prototype, {
       this.servers.map(function(s) {
         return extend({server: s}, info);
       }));
+  },
+
+  /**
+   * Provide callback an array of server slab information
+   */
+  slabs: function(callback) {
+    var info = {
+      "1":{"chunk_size":96,"chunks_per_page":10922,"total_pages":1,"total_chunks":10922,"used_chunks":0,"free_chunks":10922,"free_chunks_end":0,"mem_requested":0,"get_hits":0,"cmd_set":0,"delete_hits":0,"incr_hits":0,"decr_hits":0,"cas_hits":0,"cas_badval":0,"touch_hits":0},"active_slabs":{"undefined":1},"total_malloced":{"undefined":1048512}
+    };
+
+    invoke(callback, {self: this,
+                      type: 'slabs',
+                      args: arguments,
+                      names: ['callback']},
+      undefined,
+      this.servers.map(function(s) {
+        return extend({server: s}, info);
+      }));
   }
 
 });
