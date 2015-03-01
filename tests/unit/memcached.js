@@ -934,3 +934,13 @@ module.exports.testCachedumpMultiple = function(test) {
     });
   });
 }
+
+/** Test end */
+module.exports.testEnd = function(test) {
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.end();
+
+  test.done();
+}

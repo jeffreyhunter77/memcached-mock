@@ -456,6 +456,12 @@ extend(Memcached.prototype, {
                       args: arguments,
                       names: ['server', 'slabid', 'number', 'callback']},
       undefined, result());
+  },
+  
+  /**
+   * End the memcached connection
+   */
+  end: function() {
   }
 
 });
