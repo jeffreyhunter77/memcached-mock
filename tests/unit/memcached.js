@@ -858,3 +858,79 @@ module.exports.testItemsMultiple = function(test) {
     });
   });
 }
+
+/** Test cachedump with no entries */
+module.exports.testCachedumpEmpty = function(test) {
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.flush(function(err) {
+    test.ifError(err);
+    
+    memcached.cachedump("127.0.0.1:11211", 1, 100, function cachedumpCallback(err, reply) {
+      test.ifError(err);
+      testContext(test, this, 'cachedump', {server: "127.0.0.1:11211", slabid: 1, number: 100, callback: cachedumpCallback});
+      test.strictEqual(reply, undefined);
+      test.done();
+      
+    });
+  });
+}
+
+/** Test cachedump with one entry */
+module.exports.testCachedumpOne = function(test) {
+  var key = '19fb4f76b';
+  var value = '19fb4hu8b';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.flush(function(err) {
+    test.ifError(err);
+    
+    var ts = Math.round(Date.now()/1000);
+
+    memcached.set(key, value, 1, function(err, reply) {
+      test.ifError(err);
+      
+      memcached.cachedump("127.0.0.1:11211", 1, 100, function cachedumpCallback(err, reply) {
+        test.ifError(err);
+        testContext(test, this, 'cachedump', {server: "127.0.0.1:11211", slabid: 1, number: 100, callback: cachedumpCallback});
+        test.deepEqual(reply, {key: key, b: value.length, s: ts+1});
+        test.done();
+      
+      });
+    });
+  });
+}
+
+/** Test cachedump with multiple entries */
+module.exports.testCachedumpMultiple = function(test) {
+  var keys = ['19fb52dci','19fb52mb9'];
+  var values = ['19fb544h8','19fb549gt'];
+  var ts = [];
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  memcached.flush(function(err) {
+    test.ifError(err);
+    
+    ts.push(Math.round(Date.now()/1000));
+
+    memcached.set(keys[0], values[0], 1, function(err, reply) {
+      test.ifError(err);
+      
+      ts.push(Math.round(Date.now()/1000));
+
+      memcached.set(keys[1], values[1], 1, function(err, reply) {
+        test.ifError(err);
+      
+        memcached.cachedump("127.0.0.1:11211", 1, 100, function cachedumpCallback(err, reply) {
+          test.ifError(err);
+          testContext(test, this, 'cachedump', {server: "127.0.0.1:11211", slabid: 1, number: 100, callback: cachedumpCallback});
+          test.deepEqual(reply, [{key: keys[0], b: values[0].length, s: ts[0]+1},{key: keys[1], b: values[1].length, s: ts[1]+1}]);
+          test.done();
+      
+        });
+      });
+    });
+  });
+}

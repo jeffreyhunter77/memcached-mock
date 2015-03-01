@@ -6,6 +6,7 @@ This is currently a work in progresss. This version of the mock supports the fol
 
  * add(key, value, ttl, callback)
  * append(key, value, callback)
+ * cachedump(server, slabid, limit, callback)
  * cas(key, value, cas, ttl, callback)
  * decr(key, amount, callback)
  * del(key, callback)

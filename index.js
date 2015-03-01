@@ -431,6 +431,31 @@ extend(Memcached.prototype, {
       this.servers.map(function(s) {
         return extend(len > 0 ? {server: s} : {}, info);
       }));
+  },
+  
+  /**
+   * Provide callback with a set of cachedump information
+   */
+  cachedump: function(server, slabid, limit, callback) {
+    var items = Object.keys(cache).map(function(key) {
+      return {key: key,
+              b: String(cache[key].value).length,
+              s: Math.round(cache[key].expires/1000)};
+    });
+    
+    function result() {
+      switch(items.length) {
+        case 0: return;
+        case 1: return items[0];
+        default: return items;
+      };
+    }
+    
+    invoke(callback, {self: this,
+                      type: 'cachedump',
+                      args: arguments,
+                      names: ['server', 'slabid', 'number', 'callback']},
+      undefined, result());
   }
 
 });
