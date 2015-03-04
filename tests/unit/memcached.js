@@ -944,3 +944,25 @@ module.exports.testEnd = function(test) {
 
   test.done();
 }
+
+/** Test config */
+module.exports.testConfig = function(test) {
+  var memcached = new Memcached("127.0.0.1:11211");
+
+  Object.keys(Memcached.config).forEach(function(c) {
+    test.strictEqual(memcached[c], Memcached.config[c]);
+  });
+
+  memcached = new Memcached("127.0.0.1:11211", {maxKeySize: 500, remove: true});
+
+  Object.keys(Memcached.config).forEach(function(c) {
+    if (c === 'maxKeySize')
+      test.strictEqual(memcached[c], 500);
+    else if (c === 'remove')
+      test.strictEqual(memcached[c], true);
+    else
+      test.strictEqual(memcached[c], Memcached.config[c]);
+  });
+  
+  test.done();
+}
