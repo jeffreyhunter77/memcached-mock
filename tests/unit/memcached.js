@@ -966,3 +966,21 @@ module.exports.testConfig = function(test) {
   
   test.done();
 }
+
+/** Test access to the cache */
+module.exports.testCacheGet = function(test) {
+  var key = '19flcg6tg';
+  var value = '19flcgclp';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  var cache = memcached.cache();
+  
+  memcached.set(key, value, 1, function(err) {
+    test.ifError(err);
+    
+    test.strictEqual(cache[key].value, value);
+    
+    test.done();
+    
+  });
+}

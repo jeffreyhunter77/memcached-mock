@@ -51,3 +51,9 @@ memcached.get("hello", function(err, data) {
 ```
 
 Although the interface is the same, no network calls are made. Values are stored in memory and discarded when the process exits.
+
+The mock supports one additional method: `cache()`, which provides direct access to the underlying in-memory cache. Values in the cache object are also objects with the following properties:
+
+ * **value** - The stored value
+ * **expires** - The time in milliseconds when this entry expires
+ * **cas** - The CAS id of the entry

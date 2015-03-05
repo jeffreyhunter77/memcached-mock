@@ -464,6 +464,13 @@ extend(Memcached.prototype, {
    * End the memcached connection
    */
   end: function() {
+  },
+  
+  /**
+   * Directly access the mock cache
+   */
+  cache: function() {
+    return cache;
   }
 
 });
