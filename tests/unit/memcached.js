@@ -984,3 +984,26 @@ module.exports.testCacheGet = function(test) {
     
   });
 }
+
+/** Test 0 TTL (doesn't expire) */
+module.exports.testZeroTTL = function(test) {
+  var key = '19g4nsf8u';
+  var value = '19g4nv1vr';
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  var cache = memcached.cache();
+  
+  memcached.set(key, value, 0, function(err) {
+    test.ifError(err);
+    
+    test.strictEqual(cache[key].expires, 0);
+    
+    memcached.get(key, function(err, data) {
+      test.ifError(err);
+      
+      test.strictEqual(data, value);
+      
+      test.done();
+    });
+  });
+}

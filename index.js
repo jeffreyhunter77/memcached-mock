@@ -27,7 +27,7 @@ function extend(dest, src) {
  * Return the expiration time from a TTL in seconds
  */
 function expires(memcached, ttl) {
-  return Date.now() + (Number(ttl) * 1000);
+  return ttl === 0 ? 0 : (Date.now() + (Number(ttl) * 1000));
 }
 
 /**
@@ -35,7 +35,7 @@ function expires(memcached, ttl) {
  * it has not expired.
  */
 function expire(memcached, key) {
-  if (cache[key] && cache[key].expires <= Date.now())
+  if (cache[key] && cache[key].expires !== 0 && cache[key].expires <= Date.now())
     delete cache[key];
   
   return cache[key];
