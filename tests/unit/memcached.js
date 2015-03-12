@@ -1007,3 +1007,29 @@ module.exports.testZeroTTL = function(test) {
     });
   });
 }
+
+/** Test maxExpiration setting */
+module.exports.testMaxExpiration = function(test) {
+  var days = 60 * 60 * 24;
+  var keys = ['19g5rtq8c','19g5ru0fs'];
+  var values = ['19g5ru64u','19g5ru9e7'];
+  
+  var memcached = new Memcached("127.0.0.1:11211");
+  var memcached2 = new Memcached("127.0.0.1:11211", {maxExpiration: 90 * days});
+  var cache = memcached.cache();
+  
+  memcached.set(keys[0], values[0], 45 * days, function(err) {
+    test.ifError(err);
+    
+    var now = Date.now();
+    
+    memcached2.set(keys[1], values[1], 45 * days, function(err) {
+      test.ifError(err);
+      
+      test.ok(Math.round(cache[keys[0]].expires/1000) - 45 * days <= 1);
+      test.ok(Math.round(cache[keys[1]].expires/1000) - (Math.round(now / 1000) + 45 * days) <= 1);
+    
+      test.done();
+    });
+  });
+}
