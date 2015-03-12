@@ -37,6 +37,8 @@ function expires(memcached, ttl) {
  * it has not expired.
  */
 function expire(memcached, key) {
+  var cache = memcached.cache();
+  
   if (cache[key] && cache[key].expires !== 0 && cache[key].expires <= Date.now())
     delete cache[key];
   
@@ -47,6 +49,8 @@ function expire(memcached, key) {
  * Return the equivalent ttl for a key
  */
 function keyttl(memcached, key) {
+  var cache = memcached.cache();
+
   return cache[key] && cache[key].expires ?
     ((cache[key].expires - Date.now()) / 1000) :
     0;
@@ -75,6 +79,8 @@ function casvalue(key, entry) {
  * Sets the value of a key
  */
 function setkey(memcached, key, value, ttl) {
+  var cache = memcached.cache();
+
   cache[key] = {value: value, expires: expires(memcached, ttl), cas: (++cas)};
 }
 
@@ -135,6 +141,8 @@ extend(Memcached.prototype, {
   touch: function(key, ttl, callback) {
     expire(this, key);
     
+    var cache = this.cache();
+
     if (cache[key]) cache[key].expires = expires(this, ttl);
     
     invoke(callback, {self: this,
@@ -185,10 +193,12 @@ extend(Memcached.prototype, {
    * Get multiple values in a single call
    */
   getMulti: function(keys, callback) {
+    var self = this;
+    var cache = this.cache();
     var results = {};
     
     keys.forEach(function(key) {
-      if (expire(this, key))
+      if (expire(self, key))
         results[key] = value(cache[key]);
     });
     
@@ -204,6 +214,8 @@ extend(Memcached.prototype, {
    */
   replace: function(key, value, ttl, callback) {
     expire(this, key);
+
+    var cache = this.cache();
 
     if (cache[key])
       setkey(this, key, value, ttl);
@@ -258,6 +270,8 @@ extend(Memcached.prototype, {
   append: function(key, appendValue, callback) {
     expire(this, key);
 
+    var cache = this.cache();
+
     if (cache[key])
       setkey(this, key, String(value(cache[key])) + appendValue, keyttl(this, key));
 
@@ -274,6 +288,8 @@ extend(Memcached.prototype, {
    */
   prepend: function(key, prependValue, callback) {
     expire(this, key);
+
+    var cache = this.cache();
 
     if (cache[key])
       setkey(this, key, String(prependValue) + value(cache[key]), keyttl(this, key));
@@ -292,6 +308,8 @@ extend(Memcached.prototype, {
   incr: function(key, amount, callback) {
     expire(this, key);
 
+    var cache = this.cache();
+
     if (cache[key])
       setkey(this, key, Number(value(cache[key])) + amount, keyttl(this, key));
 
@@ -308,6 +326,8 @@ extend(Memcached.prototype, {
    */
   decr: function(key, amount, callback) {
     expire(this, key);
+
+    var cache = this.cache();
 
     if (cache[key])
       setkey(this, key, Number(value(cache[key])) - amount, keyttl(this, key));
@@ -326,6 +346,8 @@ extend(Memcached.prototype, {
   del: function(key, callback) {
     var exists = expire(this, key);
     
+    var cache = this.cache();
+
     if (exists)
       delete cache[key];
 
@@ -421,6 +443,7 @@ extend(Memcached.prototype, {
    * Provide callback an array of server items information
    */
   items: function(callback) {
+    var cache = this.cache();
     var len = Object.keys(cache).length;
     
     var info = len === 0 ? {} :
@@ -441,6 +464,7 @@ extend(Memcached.prototype, {
    * Provide callback with a set of cachedump information
    */
   cachedump: function(server, slabid, limit, callback) {
+    var cache = this.cache();
     var items = Object.keys(cache).map(function(key) {
       return {key: key,
               b: String(cache[key].value).length,
