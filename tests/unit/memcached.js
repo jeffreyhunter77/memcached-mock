@@ -985,6 +985,48 @@ module.exports.testCacheGet = function(test) {
   });
 }
 
+/** Test setting the cache */
+module.exports.testCacheSet = function(test) {
+  var keys = ['19gla8ho0','19gla8m1o'];
+  var values = ['19gla8qn0','19gla8sk1'];
+  
+  var memcachedA = new Memcached("127.0.0.1:11211");
+  var cacheA = memcachedA.cache();
+
+  var cacheB = {};
+  var memcachedB = new Memcached("127.0.0.1:11211");
+  memcachedB.cache(cacheB);
+  
+  memcachedA.set(keys[0], values[0], 1, function(err) {
+    test.ifError(err);
+    
+    memcachedB.set(keys[1], values[1], 1, function(err) {
+      test.ifError(err);
+      
+      test.strictEqual(cacheA[keys[0]].value, values[0]);
+      test.strictEqual(cacheB[keys[1]].value, values[1]);
+      
+      test.ok(!cacheA.hasOwnProperty(keys[1]));
+      test.ok(!cacheB.hasOwnProperty(keys[0]));
+    
+      memcachedA.flush(function(err) {
+        test.ifError(err);
+        
+        test.strictEqual(Object.keys(cacheA).length, 0);
+
+        memcachedB.flush(function(err) {
+          test.ifError(err);
+          
+          test.strictEqual(Object.keys(cacheB).length, 0);
+          
+          test.done();
+
+        });
+      });
+    });
+  });
+}
+
 /** Test 0 TTL (doesn't expire) */
 module.exports.testZeroTTL = function(test) {
   var key = '19g4nsf8u';

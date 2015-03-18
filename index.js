@@ -9,7 +9,7 @@ var util = require('util')
   , events = require('events')
 ;
 
-var cache = {};
+var _cache = {};
 var cas = 1;
 
 /**
@@ -376,7 +376,9 @@ extend(Memcached.prototype, {
    * Flush the contents of the cache
    */
   flush: function(callback) {
-    cache = {};
+    var c = this.cache();
+
+    Object.keys(c).forEach(function(k) { delete c[k]; });
 
     invoke(callback, {self: this,
                       type: 'flush',
@@ -495,8 +497,11 @@ extend(Memcached.prototype, {
   /**
    * Directly access the mock cache
    */
-  cache: function() {
-    return cache;
+  cache: function(newCache) {
+    if (arguments.length > 0)
+      this._cache = newCache;
+    
+    return this.hasOwnProperty('_cache') ? this._cache : _cache;
   }
 
 });

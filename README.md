@@ -57,3 +57,13 @@ The mock supports one additional method: `cache()`, which provides direct access
  * **value** - The stored value
  * **expires** - The time in milliseconds when this entry expires
  * **cas** - The CAS id of the entry
+
+If needed, individual mock instances of Memcached get be configured to use separate caches, by setting the cache object to use, like so:
+
+```javascript
+var Memcached = require('memcached-mock');
+
+var memcached = new Memcached('192.168.0.1:11211');
+
+memcached.cache({}); // set the cache object
+```
