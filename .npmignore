@@ -1,2 +1,4 @@
 bin/test
+bin/test-coverage
+coverage
 tests

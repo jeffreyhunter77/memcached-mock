@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Copyright (c) 2015 Jeffrey Hunter
+#
+# Distributed under the MIT license. See the LICENSE file distributed
+# with this work for details and restrictions.
+#
+
+istanbul=`node -e 'console.log(require.resolve("istanbul/lib/cli"));'`
+
+"$istanbul" cover bin/test
