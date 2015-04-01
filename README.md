@@ -2,7 +2,7 @@
 
 A mock implementation of [memcached](https://www.npmjs.com/package/memcached) to use as a replacement in tests.
 
-This is an in-memory implementation. It implements the documented, public API of the `memcached` module. The interface is the same, however, no network calls are made. Values are stored in memory and discarded when the process exits.
+This is an in-memory implementation. It implements the documented, public API of the `memcached` module (and known aliases). The interface is the same, however, no network calls are made. Values are stored in memory and discarded when the process exits.
 
 ## Getting Started
 
@@ -197,6 +197,10 @@ Decrement a key's value by `amount`. This is only successful if the key already 
 
 Remove a key from the cache.
 
+#### memcached.delete(key, callback)
+
+Alias of `del()`.
+
 #### memcached.end()
 
 Terminate the server connection. This method has no effect.
@@ -206,6 +210,10 @@ Terminate the server connection. This method has no effect.
  * `callback`: **Function** On completion callback
 
 Flush all keys from the cache.
+
+#### memcached.flushAll(callback)
+
+Alias of `flush()`.
 
 #### memcached.get(key, callback)
 
@@ -285,6 +293,18 @@ Retrieve server slab information. This returns stub data showing one slab for ea
  * `callback`: **Function** On completion callback
 
 Retrieve server stats. This returns stub data for each server given in the constructor.
+
+#### memcached.statsItems(callback)
+
+Alias of `items()`.
+
+#### memcached.statsSettings(callback)
+
+Alias of `settings()`.
+
+#### memcached.statsSlabs(callback)
+
+Alias of `slabs()`.
 
 #### version(callback)
 

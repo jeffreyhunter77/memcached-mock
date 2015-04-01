@@ -1075,3 +1075,16 @@ module.exports.testMaxExpiration = function(test) {
     });
   });
 }
+
+/** Test aliases */
+module.exports.testAliases = function(test) {
+  var memcached = new Memcached("127.0.0.1:11211");
+  
+  test.strictEqual(memcached.delete, memcached.del);
+  test.strictEqual(memcached.flushAll, memcached.flush);
+  test.strictEqual(memcached.statsSettings, memcached.settings);
+  test.strictEqual(memcached.statsSlabs, memcached.slabs);
+  test.strictEqual(memcached.statsItems, memcached.items);
+  
+  test.done();
+}

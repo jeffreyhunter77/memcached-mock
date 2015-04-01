@@ -526,4 +526,17 @@ Memcached.config = {
   idle: 5000
 };
 
+// aliases
+var aliases = {
+  'delete': 'del',
+  'flushAll': 'flush',
+  'statsSettings': 'settings',
+  'statsSlabs': 'slabs',
+  'statsItems': 'items'
+};
+
+Object.keys(aliases).forEach(function(alias) {
+  Memcached.prototype[alias] = Memcached.prototype[aliases[alias]];
+});
+
 module.exports = Memcached;
