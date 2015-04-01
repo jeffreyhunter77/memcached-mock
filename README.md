@@ -126,7 +126,7 @@ Append data to an existing key's value. The key must already exist in the cache.
 
 #### memcached.cache()
 
-This method is not part of the memcached interface. It provides direct access to the underlying in-memory cache. Values in the cache object are also objects with the following properties:
+This method is not part of the `memcached` interface. It provides direct access to the underlying in-memory cache. Values in the cache object are also objects with the following properties:
 
  * **value** - The stored value
  * **expires** - The time in milliseconds when this entry expires
@@ -144,7 +144,7 @@ assert.deepEqual(cache["session-1"].value, {userId: 2});
 
  * `cacheObject`: **Object** The cache object to use
 
-This method is not part of the memcached interface. It allows individual mock instances of Memcached to be configured to use a specific cache object instead of the default global cache.
+This method is not part of the `memcached` interface. It allows individual mock instances of Memcached to be configured to use a specific cache object instead of the default global cache.
 
 This allows you to write code like:
 
