@@ -245,6 +245,36 @@ extend(Memcached.prototype, {
       (!exists ? true : false));
   },
   
+  /** 
+  * Get nodes of cluster ('config get cluster')
+  */
+  config: function(type, callback) {
+	if (type !== 'cluster' && type !== 'AmazonElastiCache:cluster')
+		throw "It must be config get cluster or config get AmazonElastiCache:cluster to last versions, not config get " + type;
+	
+	// Compose response
+	var response = "";
+	var high = 5, low = 1;
+	
+	// Computes random version
+	var version = Math.random() * (high - low) + low;
+		
+	response += version + ' \n';
+	for(var i = 0; i < this.servers.length; i++) {
+		var _serverport = this.servers[i].split(':');
+		if (_serverport.length === 2)
+			response += _serverport[0] + '|' + _serverport[0] + '|' + _serverport[1] + ' ';
+	}
+	response += '\n\r\nEND\r\n'; 
+
+    invoke(callback, {self: this,
+                      type: 'config',
+                      args: arguments,
+                      names: ['type']},
+                      undefined,
+                      response);
+  },  
+  
   /**
    * Update a key, but only if its CAS id matches the provided value
    */
