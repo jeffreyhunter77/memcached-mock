@@ -246,15 +246,17 @@ extend(Memcached.prototype, {
   },
   
   /** 
-  * Get nodes of claster ('config get cluster')
+  * Get nodes of cluster ('config get cluster')
   */
   config: function(type, callback) {
 	if (type !== 'cluster' && type !== 'AmazonElastiCache:cluster')
 		throw "It must be config get cluster or config get AmazonElastiCache:cluster to last versions, not config get " + type;
 	
+	// Compose response
 	var response = "";
 	var high = 5, low = 1;
 	
+	// Computes random version
 	var version = Math.random() * (high - low) + low;
 		
 	response += version + ' \n';
